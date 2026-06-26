@@ -1,13 +1,14 @@
 import { Component, EventEmitter, Output } from "@angular/core";
 import { SessionSummary } from "../../models/sessionSummary";
 import { CommonModule } from "@angular/common";
+import { SessionStatus } from "../../models/sessionSummary";
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './sidebar-component.html',
-  styleUrls: ['./sidebar-component.scss']
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent {
   @Output() newAssessment = new EventEmitter<void>();
@@ -24,4 +25,6 @@ export class SidebarComponent {
     this.activeSessionId = session.id;
     this.sessionSelected.emit(session);
   }
+
+  SessionStatus = SessionStatus; // Expose SessionStatus enum to the template
 }

@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ChatComponent } from '../chat/chat-component';
-import { SidebarComponent } from '../sidebar/sidebar-component';
+import { ChatComponent } from '../chat/chat.component';
+import { SidebarComponent } from '../sidebar/sidebar.component';
 import { SessionSummary } from '../../models/sessionSummary';
 
 @Component({
@@ -14,8 +14,8 @@ import { SessionSummary } from '../../models/sessionSummary';
     ChatComponent, 
     SidebarComponent
   ],
-  templateUrl: './home-component.html',
-  styleUrls: ['./home-component.scss']
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
   chatStarted = false;

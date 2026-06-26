@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { SidebarComponent } from "./sidebar-component";
+import { MessageBubbleComponent } from "./message-bubble.component";
 
-describe("SidebarComponent", () => {
-  let component: SidebarComponent;
-  let fixture: ComponentFixture<SidebarComponent>;
+describe("MessageBubbleComponent", () => {
+  let component: MessageBubbleComponent;
+  let fixture: ComponentFixture<MessageBubbleComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SidebarComponent],
+      imports: [MessageBubbleComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SidebarComponent);
+    fixture = TestBed.createComponent(MessageBubbleComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

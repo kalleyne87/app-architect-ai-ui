@@ -1,14 +1,15 @@
 import { Component, Input, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
-import { ChatMessage, MessageRole } from '../../models/chatMessage';
+import { ChatMessage, MessageRole, MessageType } from '../../models/chatMessage';
+import { MessageBubbleComponent } from '../message-bubble/message-bubble.component';
 
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './chat-component.html',
-  styleUrls: ['./chat-component.scss']
+  imports: [CommonModule, ReactiveFormsModule, MessageBubbleComponent],
+  templateUrl: './chat.component.html',
+  styleUrls: ['./chat.component.scss']
 })
 export class ChatComponent implements AfterViewChecked {
   @ViewChild('messageListEnd') messageListEnd!: ElementRef;
@@ -40,6 +41,7 @@ export class ChatComponent implements AfterViewChecked {
     this.messages.push({
       id: crypto.randomUUID(),
       role: MessageRole.User,
+      type: MessageType.Text,
       text,
       timestamp: new Date()
     });
@@ -51,6 +53,7 @@ export class ChatComponent implements AfterViewChecked {
       this.messages.push({
         id: crypto.randomUUID(),
         role: MessageRole.Assistant,
+        type: MessageType.Questions,
         text: 'Great idea! I need a bit more detail to give you the best recommendation.',
         timestamp: new Date()
       });

@@ -4,22 +4,9 @@
   <div class="chat-messages">
 
     @for (msg of messages; track msg.id) {
-      <div class="chat-bubble" [class.chat-bubble-user]="msg.role === 'user'">
-
-        @if (msg.role === 'assistant') {
-          <div class="chat-avatar">⬡</div>
-        }
-
-        <div class="chat-bubble-content" [class.chat-bubble-content-user]="msg.role === 'user'">
-          <p class="chat-bubble-text">{{ msg.text }}</p>
-          <span class="chat-bubble-time">{{ formatTime(msg.timestamp) }}</span>
-        </div>
-
-        @if (msg.role === 'user') {
-          <div class="chat-avatar chat-avatar-user">You</div>
-        }
-
-      </div>
+      <app-message-bubble 
+        [message]="msg">
+      </app-message-bubble>
     }
 
     <!-- Typing indicator -->

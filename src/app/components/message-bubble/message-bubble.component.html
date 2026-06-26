@@ -1,0 +1,173 @@
+<!-- User message -->
+@if (message.role === 'user') {
+  <div class="bubble bubble--user">
+    <div class="bubble__content bubble__content--user">
+      <p class="bubble__text">{{ message.text }}</p>
+      <span class="bubble__time">{{ formatTime(message.timestamp) }}</span>
+    </div>
+    <div class="bubble__avatar bubble__avatar--user">You</div>
+  </div>
+}
+
+<!-- Assistant: plain text -->
+@if (message.role === 'assistant' && message.type === 'text') {
+  <div class="bubble bubble--assistant">
+    <div class="bubble__avatar">⬡</div>
+    <div class="bubble__content">
+      <p class="bubble__text">{{ message.text }}</p>
+      <span class="bubble__time">{{ formatTime(message.timestamp) }}</span>
+    </div>
+  </div>
+}
+
+<!-- Assistant: probing questions -->
+@if (message.role === 'assistant' && message.type === 'questions') {
+  <div class="bubble bubble--assistant">
+    <div class="bubble__avatar">⬡</div>
+    <div class="bubble__content">
+
+      <span class="bubble__badge">? A few questions first</span>
+      <p class="bubble__text">{{ message.text }}</p>
+
+      @if (!submitted) {
+        <form [formGroup]="answersForm" (ngSubmit)="submitAnswers()" class="bubble__form">
+          <div formArrayName="answers">
+            @for (question of message.questions; track question; let i = $index) {
+              <div class="bubble__question-item">
+                <label class="bubble__question-label">{{ question }}</label>
+                <textarea
+                  class="bubble__question-input"
+                  [formControlName]="i"
+                  rows="2"
+                  placeholder="Your answer…"
+                ></textarea>
+              </div>
+            }
+          </div>
+          <button
+            type="submit"
+            class="bubble__submit-btn"
+            [disabled]="answersForm.invalid">
+            Submit answers
+          </button>
+        </form>
+      } @else {
+        <div class="bubble__answers-sent">✓ Answers submitted</div>
+      }
+
+      <span class="bubble__time">{{ formatTime(message.timestamp) }}</span>
+    </div>
+  </div>
+}
+
+<!-- Assistant: final assessment -->
+@if (message.role === 'assistant' && message.type === 'assessment') {
+  <div class="bubble bubble--assistant">
+    <div class="bubble__avatar">⬡</div>
+    <div class="bubble__content bubble__content--wide">
+
+      <div class="assessment">
+        <div class="assessment__header">
+          <span class="assessment__done-badge">✓ Assessment complete</span>
+          <h2 class="assessment__title">Your architecture plan</h2>
+        </div>
+
+        <!-- Summary -->
+        <div class="assessment__section">
+          <p class="assessment__summary">{{ message.assessment?.executiveSummary }}</p>
+        </div>
+
+        <!-- Recommended services -->
+        <div class="assessment__section">
+          <button class="assessment__toggle" (click)="toggleSection('services')">
+            <span>📦 Recommended services ({{ message.assessment?.recommendedServices?.length }})</span>
+            <span>{{ expandedSection === 'services' ? '▲' : '▼' }}</span>
+          </button>
+          @if (expandedSection === 'services') {
+            <div class="assessment__body">
+              @for (svc of message.assessment?.recommendedServices; track svc) {
+                <div class="assessment__item">
+                  <span class="assessment__dot assessment__dot--purple"></span>
+                  <span>
+                    <strong>{{ parseService(svc).name }}</strong>
+                    @if (parseService(svc).description) {
+                      <span class="assessment__item-desc"> — {{ parseService(svc).description }}</span>
+                    }
+                  </span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Risks -->
+        <div class="assessment__section">
+          <button class="assessment__toggle" (click)="toggleSection('risks')">
+            <span>⚠ Risks ({{ message.assessment?.risks?.length }})</span>
+            <span>{{ expandedSection === 'risks' ? '▲' : '▼' }}</span>
+          </button>
+          @if (expandedSection === 'risks') {
+            <div class="assessment__body">
+              @for (risk of message.assessment?.risks; track risk) {
+                <div class="assessment__item">
+                  <span class="assessment__dot assessment__dot--red"></span>
+                  {{ risk }}
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Tradeoffs -->
+        <div class="assessment__section">
+          <button class="assessment__toggle" (click)="toggleSection('tradeoffs')">
+            <span>⇄ Tradeoffs ({{ message.assessment?.tradeoffs?.length }})</span>
+            <span>{{ expandedSection === 'tradeoffs' ? '▲' : '▼' }}</span>
+          </button>
+          @if (expandedSection === 'tradeoffs') {
+            <div class="assessment__body">
+              @for (t of message.assessment?.tradeoffs; track t) {
+                <div class="assessment__item">
+                  <span class="assessment__dot assessment__dot--amber"></span>
+                  {{ t }}
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Roadmap -->
+        <div class="assessment__section assessment__section--last">
+          <button class="assessment__toggle" (click)="toggleSection('roadmap')">
+            <span>🗺 Roadmap ({{ message.assessment?.roadmap?.length }} steps)</span>
+            <span>{{ expandedSection === 'roadmap' ? '▲' : '▼' }}</span>
+          </button>
+          @if (expandedSection === 'roadmap') {
+            <div class="assessment__body">
+              @for (step of message.assessment?.roadmap; track step; let i = $index) {
+                <div class="assessment__roadmap-item">
+                  <div class="assessment__roadmap-num">{{ i + 1 }}</div>
+                  <div>{{ step }}</div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+      </div>
+
+      <span class="bubble__time">{{ formatTime(message.timestamp) }}</span>
+    </div>
+  </div>
+}
+
+<!-- Assistant: error -->
+@if (message.role === 'assistant' && message.type === 'error') {
+  <div class="bubble bubble--assistant">
+    <div class="bubble__avatar bubble__avatar--error">!</div>
+    <div class="bubble__content">
+      <p class="bubble__text bubble__text--error">{{ message.text }}</p>
+      <span class="bubble__time">{{ formatTime(message.timestamp) }}</span>
+    </div>
+  </div>
+}
