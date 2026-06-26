@@ -1,0 +1,57 @@
+<div class="chat">
+
+  <!-- Messages -->
+  <div class="chat-messages">
+
+    @for (msg of messages; track msg.id) {
+      <div class="chat-bubble" [class.chat-bubble-user]="msg.role === 'user'">
+
+        @if (msg.role === 'assistant') {
+          <div class="chat-avatar">⬡</div>
+        }
+
+        <div class="chat-bubble-content" [class.chat-bubble-content-user]="msg.role === 'user'">
+          <p class="chat-bubble-text">{{ msg.text }}</p>
+          <span class="chat-bubble-time">{{ formatTime(msg.timestamp) }}</span>
+        </div>
+
+        @if (msg.role === 'user') {
+          <div class="chat-avatar chat-avatar-user">You</div>
+        }
+
+      </div>
+    }
+
+    <!-- Typing indicator -->
+    @if (isLoading) {
+      <div class="chat-bubble">
+        <div class="chat-avatar">⬡</div>
+        <div class="chat-typing">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    }
+
+    <div #messageListEnd></div>
+  </div>
+
+  <!-- Input -->
+  <footer class="chat-footer">
+    <div class="chat-input-wrap" [class.chat-input-wrap-focused]="false">
+        <textarea
+            class="chat-input"
+            [formControl]="inputControl"
+            (keydown)="onKeydown($event)"
+            placeholder="Type your answer…"
+            rows="1">
+        </textarea>
+        <button
+            class="chat-send-btn"
+            (click)="sendMessage()"
+            [disabled]="inputControl.invalid || isLoading">➤
+        </button>
+    </div>
+    <p class="chat-hint">Enter to send · Shift+Enter for new line</p>
+  </footer>
+
+</div>
