@@ -12,23 +12,25 @@
   <p class="sidebar-section-label">Recent</p>
 
   <nav class="sidebar-sessions">
-    @if (sessions.length === 0) {
+    @if (store.sessionHistory().length === 0) {
       <div class="sidebar-empty">
         No sessions yet.<br />Start a new assessment.
       </div>
     }
 
-    @for (session of sessions; track session.id) {
+    @for (session of store.sessionHistory(); track session.id) {
       <button
-        class="sidebar-sessions-item"
-        [class.sidebar-sessions-item-active]="activeSessionId === session.id"
+        class="sidebar-session-item"
+        [class.sidebar-session-item-active]="store.activeSessionId() === +session.id"
         (click)="onSelectSession(session)">
-        <span class="sidebar-sessions-icon" [attr.data-status]="session.status">
-          @if (session.status === SessionStatus.Completed) { ✓ }
-          @else if (session.status === SessionStatus.Failed) { ! }
+        <span 
+          class="sidebar-session-icon" 
+          [attr.data-status]="session.status">
+          @if (session.status === sessionStatus.Completed) { ✓ }
+          @else if (session.status === sessionStatus.Failed) { ! }
           @else { ◎ }
         </span>
-        <span class="sidebar-sessions-title">{{ session.title }}</span>
+        <span class="sidebar-session-title">{{ session.title }}</span>
       </button>
     }
   </nav>

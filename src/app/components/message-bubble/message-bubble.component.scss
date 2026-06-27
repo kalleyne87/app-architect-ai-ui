@@ -4,9 +4,9 @@
   padding: 4px 0;
   animation: fadeIn 0.2s ease-out;
 
-  &--user { flex-direction: row-reverse; }
+  &-user { flex-direction: row-reverse; }
 
-  &__avatar {
+  &-avatar {
     width: 30px;
     height: 30px;
     border-radius: 8px;
@@ -19,7 +19,7 @@
     font-size: 14px;
     flex-shrink: 0;
 
-    &--user {
+    &-user {
       background: #6366f1;
       color: #fff;
       border: none;
@@ -28,23 +28,23 @@
       font-weight: 600;
     }
 
-    &--error {
+    &-error {
       background: rgba(239,68,68,0.12);
       color: #f87171;
       border-color: rgba(239,68,68,0.2);
     }
   }
 
-  &__content {
+  &-content {
     display: flex;
     flex-direction: column;
     max-width: 75%;
 
-    &--user { align-items: flex-end; }
-    &--wide { max-width: 92%; }
+    &-user { align-items: flex-end; }
+    &-wide { max-width: 92%; }
   }
 
-  &__text {
+  &-text {
     background: rgba(255,255,255,0.06);
     color: rgba(255,255,255,0.88);
     padding: 10px 14px;
@@ -56,27 +56,27 @@
     white-space: pre-wrap;
     word-break: break-word;
 
-    .bubble--user & {
+    .bubble-user & {
       background: #6366f1;
       color: #fff;
       border-radius: 12px;
       border-bottom-right-radius: 3px;
     }
 
-    &--error {
+    &-error {
       background: rgba(239,68,68,0.1);
       color: #fca5a5;
       border: 1px solid rgba(239,68,68,0.2);
     }
   }
 
-  &__time {
+  &-time {
     font-size: 10.5px;
     color: rgba(255,255,255,0.25);
     padding: 0 2px;
   }
 
-  &__badge {
+  &-badge {
     display: inline-block;
     font-size: 11px;
     color: #a5b4fc;
@@ -88,7 +88,7 @@
     width: fit-content;
   }
 
-  &__form {
+  &-form {
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -99,20 +99,20 @@
     margin-top: 6px;
   }
 
-  &__question-item {
+  &-question-item {
     display: flex;
     flex-direction: column;
     gap: 5px;
   }
 
-  &__question-label {
+  &-question-label {
     font-size: 12.5px;
     color: rgba(255,255,255,0.7);
     font-weight: 500;
     line-height: 1.4;
   }
 
-  &__question-input {
+  &-question-input {
     padding: 8px 11px;
     border-radius: 8px;
     border: 1px solid rgba(255,255,255,0.1);
@@ -130,7 +130,7 @@
     }
   }
 
-  &__submit-btn {
+  &-submit-btn {
     align-self: flex-start;
     padding: 8px 16px;
     border-radius: 8px;
@@ -146,7 +146,7 @@
     &:disabled { opacity: 0.5; cursor: not-allowed; }
   }
 
-  &__answers-sent {
+  &-answers-sent {
     font-size: 12px;
     color: #4ade80;
     padding: 6px 0;
@@ -162,12 +162,12 @@
   overflow: hidden;
   margin-bottom: 4px;
 
-  &__header {
+  &-header {
     padding: 16px 18px 14px;
     border-bottom: 1px solid rgba(255,255,255,0.07);
   }
 
-  &__done-badge {
+  &-done-badge {
     display: inline-block;
     font-size: 11px;
     color: #4ade80;
@@ -178,19 +178,19 @@
     margin-bottom: 8px;
   }
 
-  &__title {
+  &-title {
     font-size: 15px;
     font-weight: 600;
     color: rgba(255,255,255,0.9);
     margin: 0;
   }
 
-  &__section {
+  &-section {
     border-bottom: 1px solid rgba(255,255,255,0.06);
-    &--last { border-bottom: none; }
+    &-last { border-bottom: none; }
   }
 
-  &__summary {
+  &-summary {
     padding: 14px 18px;
     font-size: 13.5px;
     line-height: 1.65;
@@ -198,7 +198,7 @@
     margin: 0;
   }
 
-  &__toggle {
+  &-toggle {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -215,7 +215,7 @@
     &:hover { background: rgba(255,255,255,0.03); }
   }
 
-  &__body {
+  &-body {
     padding: 4px 18px 14px;
     display: flex;
     flex-direction: column;
@@ -223,7 +223,7 @@
     animation: fadeIn 0.15s ease-out;
   }
 
-  &__item {
+  &-item {
     display: flex;
     gap: 10px;
     align-items: flex-start;
@@ -232,21 +232,21 @@
     color: rgba(255,255,255,0.72);
   }
 
-  &__item-desc { color: rgba(255,255,255,0.45); }
+  &-item-desc { color: rgba(255,255,255,0.45); }
 
-  &__dot {
+  &-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
     margin-top: 5px;
     flex-shrink: 0;
 
-    &--purple { background: #a78bfa; }
-    &--red    { background: #f87171; }
-    &--amber  { background: #fbbf24; }
+    &-purple { background: #a78bfa; }
+    &-red    { background: #f87171; }
+    &-amber  { background: #fbbf24; }
   }
 
-  &__roadmap-item {
+  &-roadmap-item {
     display: flex;
     gap: 12px;
     align-items: flex-start;
@@ -255,7 +255,7 @@
     color: rgba(255,255,255,0.72);
   }
 
-  &__roadmap-num {
+  &-roadmap-num {
     width: 22px;
     height: 22px;
     border-radius: 50%;

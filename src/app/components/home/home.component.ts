@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormControl } from '@angular/forms';
+import { AssessmentStore } from '../../store/assessment.store';
 import { ChatComponent } from '../chat/chat.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { SessionSummary } from '../../models/sessionSummary';
@@ -8,18 +9,13 @@ import { SessionSummary } from '../../models/sessionSummary';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [
-    CommonModule, 
-    ReactiveFormsModule, 
-    ChatComponent, 
-    SidebarComponent
-  ],
+  imports: [CommonModule, ReactiveFormsModule, ChatComponent, SidebarComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
-  chatStarted = false;
-  firstMessage = '';
+  protected readonly store = inject(AssessmentStore);
+
   inputControl = new FormControl('');
 
   suggestions = [
@@ -32,19 +28,7 @@ export class HomeComponent {
   startChat(text: string): void {
     const trimmed = text?.trim();
     if (!trimmed) return;
-    this.firstMessage = trimmed;
-    this.chatStarted = true;
-  }
-
-  // add method:
-  onSessionSelected(session: SessionSummary): void {
-    // wire up later when store is connected
-    console.log('selected session', session);
-  }
-  
-  resetChat(): void {
-    this.chatStarted = false;
-    this.firstMessage = '';
+    this.store.sendRequirements({ requirements: trimmed });
     this.inputControl.reset();
   }
 
@@ -53,5 +37,9 @@ export class HomeComponent {
       event.preventDefault();
       this.startChat(this.inputControl.value ?? '');
     }
+  }
+
+  onSessionSelected(session: SessionSummary): void {
+    console.log('session selected', session);
   }
 }

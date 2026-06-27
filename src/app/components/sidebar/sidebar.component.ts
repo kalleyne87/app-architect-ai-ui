@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Output } from "@angular/core";
-import { SessionSummary } from "../../models/sessionSummary";
-import { CommonModule } from "@angular/common";
-import { SessionStatus } from "../../models/sessionSummary";
+import { Component, Output, EventEmitter, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { AssessmentStore } from '../../store/assessment.store';
+import { SessionStatus, SessionSummary } from '../../models/sessionSummary';
 
 @Component({
   selector: 'app-sidebar',
@@ -14,17 +14,16 @@ export class SidebarComponent {
   @Output() newAssessment = new EventEmitter<void>();
   @Output() sessionSelected = new EventEmitter<SessionSummary>();
 
-  sessions: SessionSummary[] = [];
-  activeSessionId: string | null = null;
+  protected readonly store = inject(AssessmentStore);
 
   onNewAssessment(): void {
+    this.store.startNewSession();
     this.newAssessment.emit();
   }
 
   onSelectSession(session: SessionSummary): void {
-    this.activeSessionId = session.id;
     this.sessionSelected.emit(session);
   }
 
-  SessionStatus = SessionStatus; // Expose SessionStatus enum to the template
+  sessionStatus = SessionStatus
 }

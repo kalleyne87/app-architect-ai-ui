@@ -1,7 +1,8 @@
-import { Component, Input } from "@angular/core";
+import { Component, inject, Input } from "@angular/core";
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { ChatMessage } from "../../models/chatMessage";
 import { CommonModule } from "@angular/common";
+import { AssessmentStore } from "../../store/assessment.store";
 
 @Component({
   selector: "app-message-bubble",
@@ -13,12 +14,14 @@ import { CommonModule } from "@angular/common";
 export class MessageBubbleComponent {
   @Input() message!: ChatMessage;
 
+  protected readonly store = inject(AssessmentStore);
+  private readonly fb = inject(FormBuilder);
+  
   answersForm!: FormGroup;
   submitted = false;
   expandedSection: string | null = 'summary';
 
-  constructor(private fb: FormBuilder) {}
-
+  
   ngOnInit(): void {
     if (this.message.type === 'questions' && this.message.questions) {
       this.answersForm = this.fb.group({
@@ -34,10 +37,16 @@ export class MessageBubbleComponent {
   }
 
   submitAnswers(): void {
-    if (this.answersForm.invalid) return;
+    const sessionId = this.store.activeSessionId();
+    if (this.answersForm.invalid || !sessionId) return;
+
+    const answers = (this.message.questions ?? []).map((question, i) => ({
+      question,
+      answer: this.answersArray.at(i).value
+    }));
+
     this.submitted = true;
-    // wire to store later
-    console.log('answers submitted', this.answersArray.value);
+    this.store.submitAnswers({ sessionId, answers });
   }
 
   toggleSection(section: string): void {

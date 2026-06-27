@@ -1,21 +1,26 @@
 .chat {
   display: flex;
   flex-direction: column;
-  flex: 1;
   height: 100%;
   min-height: 0;
+  overflow: hidden;
 
   &-messages {
     flex: 1;
-    overflow-y: auto;
+    overflow-y: scroll;
     padding: 24px 20px 12px;
     display: flex;
     flex-direction: column;
     gap: 12px;
     min-height: 0;
+    max-height: 100%;
 
     &::-webkit-scrollbar { width: 4px; }
-    &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+    }
   }
 
   &-bubble {
@@ -23,9 +28,7 @@
     align-items: flex-start;
     gap: 10px;
 
-    &--user {
-      flex-direction: row-reverse;
-    }
+    &--user { flex-direction: row-reverse; }
   }
 
   &-avatar {
@@ -40,50 +43,6 @@
     justify-content: center;
     font-size: 14px;
     flex-shrink: 0;
-
-    &-user {
-      background: #6366f1;
-      color: #fff;
-      border: none;
-      font-size: 10px;
-      font-weight: 600;
-      border-radius: 50%;
-    }
-  }
-
-  &-bubble-content {
-    display: flex;
-    flex-direction: column;
-    max-width: 70%;
-
-    &-user {
-      align-items: flex-end;
-    }
-  }
-
-  &-bubble-text {
-    background: rgba(255,255,255,0.06);
-    color: rgba(255,255,255,0.88);
-    padding: 10px 14px;
-    border-radius: 12px;
-    border-bottom-left-radius: 3px;
-    font-size: 13.5px;
-    line-height: 1.6;
-    margin: 0 0 3px;
-    white-space: pre-wrap;
-    word-break: break-word;
-
-    .chat__bubble--user & {
-      background: #6366f1;
-      color: #fff;
-      border-radius: 12px;
-      border-bottom-right-radius: 3px;
-    }
-  }
-
-  &-bubble-time {
-    font-size: 10.5px;
-    color: rgba(255,255,255,0.25);
   }
 
   &-typing {

@@ -1,7 +1,7 @@
-import { Component, Input, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
-import { ChatMessage, MessageRole, MessageType } from '../../models/chatMessage';
+import { AssessmentStore } from '../../store/assessment.store';
 import { MessageBubbleComponent } from '../message-bubble/message-bubble.component';
 
 @Component({
@@ -11,17 +11,22 @@ import { MessageBubbleComponent } from '../message-bubble/message-bubble.compone
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent implements AfterViewChecked {
+export class ChatComponent implements AfterViewChecked, OnInit {
   @ViewChild('messageListEnd') messageListEnd!: ElementRef;
 
+  protected readonly store = inject(AssessmentStore);
+
   inputControl = new FormControl('', [Validators.required, Validators.minLength(1)]);
-  messages: ChatMessage[] = [];
-  isLoading = false;
   private shouldScroll = false;
 
-  @Input() set initialMessage(val: string) {
-    if (val) setTimeout(() => this.sendMessageWithText(val), 0);
+  constructor() {
+    effect(() => {
+      this.store.messages();
+      this.shouldScroll = true;
+    });
   }
+
+  ngOnInit(): void {}
 
   ngAfterViewChecked(): void {
     if (this.shouldScroll) {
@@ -32,34 +37,9 @@ export class ChatComponent implements AfterViewChecked {
 
   sendMessage(): void {
     const text = this.inputControl.value?.trim();
-    if (!text || this.isLoading) return;
-    this.sendMessageWithText(text);
+    if (!text || this.store.isLoading()) return;
+    this.store.sendRequirements({ requirements: text });
     this.inputControl.reset();
-  }
-
-  sendMessageWithText(text: string): void {
-    this.messages.push({
-      id: crypto.randomUUID(),
-      role: MessageRole.User,
-      type: MessageType.Text,
-      text,
-      timestamp: new Date()
-    });
-    this.isLoading = true;
-    this.shouldScroll = true;
-
-    // Replace with real API call later
-    setTimeout(() => {
-      this.messages.push({
-        id: crypto.randomUUID(),
-        role: MessageRole.Assistant,
-        type: MessageType.Questions,
-        text: 'Great idea! I need a bit more detail to give you the best recommendation.',
-        timestamp: new Date()
-      });
-      this.isLoading = false;
-      this.shouldScroll = true;
-    }, 1200);
   }
 
   onKeydown(event: KeyboardEvent): void {
@@ -67,9 +47,5 @@ export class ChatComponent implements AfterViewChecked {
       event.preventDefault();
       this.sendMessage();
     }
-  }
-
-  formatTime(date: Date): string {
-    return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 }
