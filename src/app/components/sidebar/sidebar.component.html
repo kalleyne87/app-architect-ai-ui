@@ -1,0 +1,38 @@
+<aside class="sidebar">
+
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-icon">⬡</div>
+    <span class="sidebar-brand-name">Architect AI</span>
+  </div>
+
+  <button class="sidebar-new-btn" (click)="onNewAssessment()">
+    + New assessment
+  </button>
+
+  <p class="sidebar-section-label">Recent</p>
+
+  <nav class="sidebar-sessions">
+    @if (store.sessionHistory().length === 0) {
+      <div class="sidebar-empty">
+        No sessions yet.<br />Start a new assessment.
+      </div>
+    }
+
+    @for (session of store.sessionHistory(); track session.id) {
+      <button
+        class="sidebar-session-item"
+        [class.sidebar-session-item-active]="store.activeSessionId() === +session.id"
+        (click)="onSelectSession(session)">
+        <span 
+          class="sidebar-session-icon" 
+          [attr.data-status]="session.status">
+          @if (session.status === sessionStatus.Completed) { ✓ }
+          @else if (session.status === sessionStatus.Failed) { ! }
+          @else { ◎ }
+        </span>
+        <span class="sidebar-session-title">{{ session.title }}</span>
+      </button>
+    }
+  </nav>
+
+</aside>

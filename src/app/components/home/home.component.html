@@ -1,0 +1,62 @@
+<div class="home">
+  <app-sidebar
+    (newAssessment)="store.startNewSession()"
+    (sessionSelected)="onSessionSelected($event)"
+  />
+
+  <main class="home-chat">
+    <header class="home-header">
+      <span class="home-header-title">System design architect</span>
+    </header>
+
+    @if (!store.hasActiveSession() && !store.isLoading()) {
+      <div class="home-empty-state">
+        <div class="home-empty-icon">⬡</div>
+        <h2 class="home-empty-title">What would you like to build?</h2>
+        <p class="home-empty-sub">
+          Describe your system in plain language and I'll walk you through
+          the best architecture — asking a few questions if needed.
+        </p>
+        <div class="home-suggestions">
+          @for (s of suggestions; track s) {
+            <button class="home-suggestion" (click)="startChat(s)">{{ s }}</button>
+          }
+        </div>
+      </div>
+
+      <footer class="home-footer">
+        <div class="home-input-wrap">
+          <textarea
+            class="home-input"
+            [formControl]="inputControl"
+            (keydown)="onHomeKeydown($event)"
+            rows="1"
+            placeholder="Describe the system you'd like to build…">
+          </textarea>
+          <button
+            class="home-send-btn"
+            (click)="startChat(inputControl.value ?? '')"
+            [disabled]="!inputControl.value?.trim()">
+            ➤
+          </button>
+        </div>
+        <p class="home-hint">Enter to send · Shift+Enter for new line</p>
+      </footer>
+    }
+
+    @if (store.isLoading() && !store.hasActiveSession()) {
+      <div class="home-loading">
+        <div class="home-loading-bubble">
+          <div class="home-loading-avatar">⬡</div>
+          <div class="home-loading-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (store.hasActiveSession()) {
+      <app-chat></app-chat>
+    }
+  </main>
+</div>
