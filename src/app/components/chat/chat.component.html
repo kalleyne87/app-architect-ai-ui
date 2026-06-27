@@ -1,0 +1,42 @@
+<div class="chat">
+
+  <div class="chat-messages">
+
+    @for (msg of store.messages(); track msg.id) {
+      <app-message-bubble 
+        [message]="msg">
+      </app-message-bubble>
+    }
+
+    @if (store.isLoading()) {
+      <div class="chat-bubble">
+        <div class="chat-avatar">⬡</div>
+        <div class="chat-typing">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    }
+
+    <div #messageListEnd></div>
+  </div>
+
+  <footer class="chat-footer">
+    <div class="chat-input-wrap">
+      <textarea
+        class="chat-input"
+        [formControl]="inputControl"
+        (keydown)="onKeydown($event)"
+        placeholder="Type your answer…"
+        rows="1">
+      </textarea>
+      <button
+        class="chat-send-btn"
+        (click)="sendMessage()"
+        [disabled]="inputControl.invalid || store.isLoading()">
+        ➤
+      </button>
+    </div>
+    <p class="chat-hint">Enter to send · Shift+Enter for new line</p>
+  </footer>
+
+</div>
