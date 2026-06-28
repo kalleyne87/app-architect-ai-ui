@@ -1,6 +1,6 @@
 import { Component, inject, Input } from "@angular/core";
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { ChatMessage } from "../../models/chatMessage";
+import { ChatMessage, MessageRole, MessageType } from "../../models/chatMessage";
 import { CommonModule } from "@angular/common";
 import { AssessmentStore } from "../../store/assessment.store";
 
@@ -61,4 +61,7 @@ export class MessageBubbleComponent {
     const parts = raw.split(' — ');
     return { name: parts[0] ?? raw, description: parts[1] ?? '' };
   }
+
+  MessageType = MessageType;
+  MessageRole = MessageRole;
 }

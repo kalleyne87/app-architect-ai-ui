@@ -10,16 +10,23 @@ import { SubmitAnswersRequest } from '../models/submitAnswersRequest';
 export class AssessmentService {
   private readonly baseUrl = '/api/assessments';
 
+  private readonly apiKey = 'architect-ai-2026-kb';
+
   constructor(private http: HttpClient) {}
 
   createAssessment(request: AssessmentRequest): Observable<AssessmentSessionResponse> {
-    return this.http.post<AssessmentSessionResponse>(this.baseUrl, request);
+    return this.http.post<AssessmentSessionResponse>(
+      this.baseUrl, 
+      request,
+      { headers: { 'X-Api-Key': this.apiKey } }
+    );
   }
 
   submitAnswers(request: SubmitAnswersRequest): Observable<AssessmentSessionResponse> {
     return this.http.post<AssessmentSessionResponse>(
       `${this.baseUrl}/answers`,
-      request
+      request,
+      { headers: { 'X-Api-Key': this.apiKey } }
     );
   }
 

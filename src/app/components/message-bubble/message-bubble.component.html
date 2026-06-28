@@ -1,5 +1,5 @@
 <!-- User message -->
-@if (message.role === 'user') {
+@if (message.role === MessageRole.User) {
   <div class="bubble bubble-user">
     <div class="bubble-content bubble-content-user">
       <p class="bubble-text">{{ message.text }}</p>
@@ -10,7 +10,7 @@
 }
 
 <!-- Assistant: plain text -->
-@if (message.role === 'assistant' && message.type === 'text') {
+@if (message.role === MessageRole.Assistant && message.type === MessageType.Text) {
   <div class="bubble bubble-assistant">
     <div class="bubble-avatar">⬡</div>
     <div class="bubble-content">
@@ -21,7 +21,7 @@
 }
 
 <!-- Assistant: probing questions -->
-@if (message.role === 'assistant' && message.type === 'questions') {
+@if (message.role === MessageRole.Assistant && message.type === MessageType.Questions) {
   <div class="bubble bubble-assistant">
     <div class="bubble-avatar">⬡</div>
     <div class="bubble-content">
