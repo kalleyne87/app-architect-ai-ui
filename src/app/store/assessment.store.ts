@@ -1,7 +1,7 @@
 import { computed, inject } from '@angular/core';
 import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { EMPTY, catchError, pipe, switchMap, tap } from 'rxjs';
+import { pipe, switchMap, tap } from 'rxjs';
 import { AssessmentService } from '../services/assessment';
 import { ChatMessage, MessageRole, MessageType } from '../models/chatMessage';
 import { SessionStatus, SessionSummary } from '../models/sessionSummary';
@@ -15,30 +15,29 @@ import { tapResponse } from '@ngrx/operators';
 // ─────────────────────────────────────────────
 
 export interface AssessmentState {
-  activeSessionId:  number | null;
-  sessionStatus:    string | null;
-  isLoading:        boolean;
-  error:            string | null;
+  activeSessionId: string | null;
+  sessionStatus: string | null;
+  isLoading: boolean;
+  error: string | null;
   pendingQuestions: string[];
-  messages:         ChatMessage[];
-  sessionHistory:   SessionSummary[];
+  messages: ChatMessage[];
+  sessionHistory: SessionSummary[];
 }
 
 const initialState: AssessmentState = {
-  activeSessionId:  null,
-  sessionStatus:    null,
-  isLoading:        false,
-  error:            null,
+  activeSessionId: null,
+  sessionStatus: null,
+  isLoading: false,
+  error: null,
   pendingQuestions: [],
-  messages:         [],
-  sessionHistory:   [],
+  messages: [],
+  sessionHistory: [],
 };
 
 export const AssessmentStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
 
-  // ── Computed ────────────────────────────────
   withComputed((store) => ({
     hasActiveSession: computed(() => store.activeSessionId() !== null),
     isSessionComplete: computed(() => store.sessionStatus() === SessionStatus.Completed),
@@ -47,10 +46,7 @@ export const AssessmentStore = signalStore(
     ),
   })),
 
-  // ── Methods ─────────────────────────────────
   withMethods((store, assessmentService = inject(AssessmentService)) => {
-
-    // Private helpers
     function addMessage(message: ChatMessage): void {
       patchState(store, (state) => ({
         messages: [...state.messages, message],
@@ -152,8 +148,7 @@ export const AssessmentStore = signalStore(
         )
       ),
 
-      // POST /api/assessment/answers
-      submitAnswers: rxMethod<{ sessionId: number; answers: QuestionAnswer[] }>(
+      submitAnswers: rxMethod<{ sessionId: string; answers: QuestionAnswer[] }>(
         pipe(
           tap(({ answers }) => {
             const summary = answers

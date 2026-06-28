@@ -1,7 +1,7 @@
 import { AssessmentResponse } from "./assessmentResponse";
 
 export interface AssessmentSessionResponse {
-  sessionId: number;
+  sessionId: string;
   status: AssessmentSessionStatus;
   isReadyForAssessment: boolean;
   missingInformationAreas: string[];

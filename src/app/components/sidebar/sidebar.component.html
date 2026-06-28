@@ -20,7 +20,7 @@
     @for (session of store.sessionHistory(); track session.id) {
       <button
         class="sidebar-session-item"
-        [class.sidebar-session-item-active]="store.activeSessionId() === +session.id"
+        [class.sidebar-session-item-active]="store.activeSessionId() === session.id"
         (click)="onSelectSession(session)">
         <span 
           class="sidebar-session-icon" 
