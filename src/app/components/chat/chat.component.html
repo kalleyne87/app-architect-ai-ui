@@ -18,7 +18,7 @@
     <div #messageListEnd></div>
   </div>
 
-  @if (store.pendingQuestions().length === 0 && !store.isLoading()) {
+  @if (store.pendingQuestions().length === 0 && !store.isLoading() && !store.isSessionComplete()) {
     <footer class="chat-footer">
       <div class="chat-input-wrap">
         <textarea

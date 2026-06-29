@@ -40,9 +40,10 @@ export class MessageBubbleComponent {
     const sessionId = this.store.activeSessionId();
     if (this.answersForm.invalid || !sessionId) return;
 
-    const answers = (this.message.questions ?? []).map((question, i) => ({
+    const answers = (this.message.questions ?? []).map((question, i) => ( {
       question,
-      answer: this.answersArray.at(i).value
+      answer: this.answersArray.at(i).value,
+      createdDateTime: new Date()
     }));
 
     this.submitted = true;

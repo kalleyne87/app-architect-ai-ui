@@ -6,7 +6,7 @@ export interface SessionSummary {
 }
 
 export enum SessionStatus {
-  Active = 'active',
-  Completed = 'completed',
-  Failed = 'failed'
+  Active = 'Active',
+  Completed = 'Completed',
+  Failed = 'Failed'
 }
