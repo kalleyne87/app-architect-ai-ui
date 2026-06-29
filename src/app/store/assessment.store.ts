@@ -18,6 +18,7 @@ export interface AssessmentState {
   activeSessionId: string | null;
   sessionStatus: string | null;
   isLoading: boolean;
+  isLoadingSession: boolean;
   error: string | null;
   pendingQuestions: string[];
   messages: ChatMessage[];
@@ -28,6 +29,7 @@ const initialState: AssessmentState = {
   activeSessionId: null,
   sessionStatus: null,
   isLoading: false,
+  isLoadingSession: false,
   error: null,
   pendingQuestions: [],
   messages: [],
@@ -200,6 +202,123 @@ export const AssessmentStore = signalStore(
                     error: err.message ?? 'Unknown error',
                   });
                 },
+              })
+            )
+          )
+        )
+      ),
+
+      loadSessions: rxMethod<void>(
+        pipe(
+          tap(() => patchState(store, { isLoading: true })),
+          switchMap(() =>
+            assessmentService.getSessions().pipe(
+              tapResponse({
+                next: (sessions) => {
+                  const history: SessionSummary[] = sessions.map(s => ({
+                    id: s.id,
+                    title: s.originalRequest.slice(0, 50) +
+                      (s.originalRequest.length > 50 ? '…' : ''),
+                    status: s.status === SessionStatus.Completed ? SessionStatus.Completed :
+                            s.status === SessionStatus.Failed ? SessionStatus.Failed : SessionStatus.Active,
+                    createdAt: new Date(s.createdDateTime)
+                  }));
+                  patchState(store, { sessionHistory: history, isLoading: false });
+                },
+                error: (err: Error) => {
+                  patchState(store, { isLoading: false, error: err.message });
+                }
+              })
+            )
+          )
+        )
+      ),
+
+      loadSession: rxMethod<string>(
+        pipe(
+          tap(() => patchState(store, { isLoadingSession: true, messages: [] })),
+          switchMap((id) =>
+            assessmentService.getSession(id).pipe(
+              tapResponse({
+                next: (session) => {
+                  const messages: ChatMessage[] = [];
+
+                  // Add original request as user message
+                  messages.push({
+                    id: crypto.randomUUID(),
+                    role: MessageRole.User,
+                    type: MessageType.Text,
+                    text: session.originalRequest,
+                    timestamp: new Date(session.createdDateTime)
+                  });
+
+                  // Rebuild Q&A rounds from collected answers
+                  if (session.collectedQuestionsAndAnswers.length > 0) {
+                    // Group into rounds of questions (3 per round max)
+                    const roundSize = 3;
+                    const qna = session.collectedQuestionsAndAnswers;
+
+                    for (let i = 0; i < qna.length; i += roundSize) {
+                      const round = qna.slice(i, i + roundSize);
+
+                      // AI question bubble
+                      messages.push({
+                        id: crypto.randomUUID(),
+                        role: MessageRole.Assistant,
+                        type: MessageType.Questions,
+                        text: i === 0
+                          ? 'Great idea! I needed a bit more detail. Here were my questions:'
+                          : 'Thanks! I had a few more questions:',
+                        questions: round.map((q: any) => q.question),
+                        timestamp: new Date(round[0].createdDateTime)
+                      });
+
+                      // User answer bubble
+                      const answerSummary = round
+                        .map((qa: any) => `${qa.question}\n${qa.answer}`)
+                        .join('\n\n');
+
+                      messages.push({
+                        id: crypto.randomUUID(),
+                        role: MessageRole.User,
+                        type: MessageType.Text,
+                        text: answerSummary,
+                        timestamp: new Date(round[0].createdDateTime)
+                      });
+                    }
+                  }
+
+                  // Add final assessment if completed
+                  if (session.finalAssessment) {
+                    messages.push({
+                      id: crypto.randomUUID(),
+                      role: MessageRole.Assistant,
+                      type: MessageType.Assessment,
+                      assessment: {
+                        executiveSummary: session.finalAssessment.executiveSummary,
+                        recommendedServices: session.finalAssessment.recommendedServices,
+                        risks: session.finalAssessment.risks,
+                        tradeoffs: session.finalAssessment.tradeoffs,
+                        roadmap: session.finalAssessment.roadmap,
+                      },
+                      timestamp: new Date(session.finalAssessment.createdDateTime)
+                    });
+                  }
+
+                  patchState(store, {
+                    activeSessionId: session.id,
+                    sessionStatus: session.status === 'Completed' 
+                                    ? SessionStatus.Completed : session.status,
+                    isLoadingSession: false,
+                    messages
+                  });
+                },
+                error: (err: Error) => {
+                  patchState(store, {
+                    isLoadingSession: false,
+                    error: err.message
+                  });
+                }
               })
             )
           )

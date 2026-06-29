@@ -16,6 +16,10 @@ import { SessionSummary } from '../../models/sessionSummary';
 export class HomeComponent {
   protected readonly store = inject(AssessmentStore);
 
+  constructor() {
+    this.store.loadSessions();
+  }
+
   inputControl = new FormControl('');
   lastInput = "";
 
@@ -42,6 +46,6 @@ export class HomeComponent {
   }
 
   onSessionSelected(session: SessionSummary): void {
-    console.log('session selected', session);
+    this.store.loadSession(session.id);
   }
 }

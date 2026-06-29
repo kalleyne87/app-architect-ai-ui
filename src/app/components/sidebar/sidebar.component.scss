@@ -116,6 +116,12 @@
         background: rgba(99,102,241,0.22);
       }
     }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
   }
 
   &-session-icon {
@@ -136,4 +142,44 @@
     flex: 1;
     min-width: 0;
   }
+
+  &-new-btn {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: transparent;
+    color: rgba(255,255,255,0.7);
+    font-size: 12.5px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
+    margin-bottom: 8px;
+
+    &:hover {
+      background: rgba(255,255,255,0.07);
+      color: #fff;
+    }
+
+    &-highlighted {
+      background: rgba(99,102,241,0.2);
+      border-color: rgba(99,102,241,0.6);
+      color: #c7d2fe;
+      box-shadow: 0 0 10px rgba(99,102,241,0.3);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 10px rgba(99,102,241,0.3); }
+      50%       { box-shadow: 0 0 18px rgba(99,102,241,0.6); }
+    }
+  }
 }
+
+

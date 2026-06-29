@@ -67,7 +67,18 @@
 
     <!-- Active chat -->
     @if (store.hasActiveSession()) {
-      <app-chat></app-chat>
+      @if (store.isLoadingSession()) {
+        <div class="home-pre-chat">
+          <div class="home-pre-chat-ai">
+            <div class="home-loading-avatar">⬡</div>
+            <div class="home-loading-dots">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <app-chat></app-chat>
+      }
     }
   </main>
 </div>
