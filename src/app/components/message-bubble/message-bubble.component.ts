@@ -1,6 +1,6 @@
 import { Component, inject, Input } from "@angular/core";
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { ChatMessage } from "../../models/chatMessage";
+import { ChatMessage, MessageRole, MessageType } from "../../models/chatMessage";
 import { CommonModule } from "@angular/common";
 import { AssessmentStore } from "../../store/assessment.store";
 
@@ -40,9 +40,10 @@ export class MessageBubbleComponent {
     const sessionId = this.store.activeSessionId();
     if (this.answersForm.invalid || !sessionId) return;
 
-    const answers = (this.message.questions ?? []).map((question, i) => ({
+    const answers = (this.message.questions ?? []).map((question, i) => ( {
       question,
-      answer: this.answersArray.at(i).value
+      answer: this.answersArray.at(i).value,
+      createdDateTime: new Date()
     }));
 
     this.submitted = true;
@@ -61,4 +62,7 @@ export class MessageBubbleComponent {
     const parts = raw.split(' — ');
     return { name: parts[0] ?? raw, description: parts[1] ?? '' };
   }
+
+  MessageType = MessageType;
+  MessageRole = MessageRole;
 }

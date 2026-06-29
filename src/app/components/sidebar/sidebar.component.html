@@ -1,11 +1,14 @@
 <aside class="sidebar">
-
   <div class="sidebar-brand">
     <div class="sidebar-brand-icon">⬡</div>
     <span class="sidebar-brand-name">Architect AI</span>
   </div>
 
-  <button class="sidebar-new-btn" (click)="onNewAssessment()">
+  <button 
+    class="sidebar-new-btn"
+    [class.sidebar-new-btn-highlighted]="store.isSessionComplete()"
+    [disabled]="store.isLoading() || store.isLoadingSession()"
+    (click)="onNewAssessment()">
     + New assessment
   </button>
 
@@ -21,7 +24,8 @@
     @for (session of store.sessionHistory(); track session.id) {
       <button
         class="sidebar-session-item"
-        [class.sidebar-session-item-active]="store.activeSessionId() === +session.id"
+        [class.sidebar-session-item-active]="store.activeSessionId() === session.id"
+        [disabled]="store.isLoading() || store.isLoadingSession()"
         (click)="onSelectSession(session)">
         <span 
           class="sidebar-session-icon" 
@@ -34,5 +38,4 @@
       </button>
     }
   </nav>
-
 </aside>

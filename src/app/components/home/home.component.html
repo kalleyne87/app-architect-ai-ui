@@ -1,8 +1,8 @@
 <div class="home">
   <app-sidebar
     (newAssessment)="store.startNewSession()"
-    (sessionSelected)="onSessionSelected($event)"
-  />
+    (sessionSelected)="onSessionSelected($event)">
+  </app-sidebar>
 
   <main class="home-chat">
     <header class="home-header">
@@ -19,7 +19,9 @@
         </p>
         <div class="home-suggestions">
           @for (s of suggestions; track s) {
-            <button class="home-suggestion" (click)="startChat(s)">{{ s }}</button>
+            <button class="home-suggestion" (click)="startChat(s)">
+              {{ s }}
+            </button>
           }
         </div>
       </div>
@@ -44,9 +46,17 @@
       </footer>
     }
 
+    <!-- Pre-chat loading -->
     @if (store.isLoading() && !store.hasActiveSession()) {
-      <div class="home-loading">
-        <div class="home-loading-bubble">
+      <div class="home-pre-chat">
+        <!-- User bubble -->
+        <div class="home-pre-chat-user">
+          <div class="home-pre-chat-avatar">You</div>
+          <div class="home-pre-chat-text">{{ lastInput }}</div>
+        </div>
+
+        <!-- AI typing indicator -->
+        <div class="home-pre-chat-ai">
           <div class="home-loading-avatar">⬡</div>
           <div class="home-loading-dots">
             <span></span><span></span><span></span>
@@ -55,8 +65,20 @@
       </div>
     }
 
+    <!-- Active chat -->
     @if (store.hasActiveSession()) {
-      <app-chat></app-chat>
+      @if (store.isLoadingSession()) {
+        <div class="home-pre-chat">
+          <div class="home-pre-chat-ai">
+            <div class="home-loading-avatar">⬡</div>
+            <div class="home-loading-dots">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <app-chat></app-chat>
+      }
     }
   </main>
 </div>

@@ -16,7 +16,12 @@ import { SessionSummary } from '../../models/sessionSummary';
 export class HomeComponent {
   protected readonly store = inject(AssessmentStore);
 
+  constructor() {
+    this.store.loadSessions();
+  }
+
   inputControl = new FormControl('');
+  lastInput = "";
 
   suggestions = [
     'Design a messenger app similar to Facebook Messenger',
@@ -28,6 +33,7 @@ export class HomeComponent {
   startChat(text: string): void {
     const trimmed = text?.trim();
     if (!trimmed) return;
+    this.lastInput = trimmed;
     this.store.sendRequirements({ requirements: trimmed });
     this.inputControl.reset();
   }
@@ -40,6 +46,6 @@ export class HomeComponent {
   }
 
   onSessionSelected(session: SessionSummary): void {
-    console.log('session selected', session);
+    this.store.loadSession(session.id);
   }
 }
