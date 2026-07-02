@@ -1,15 +1,16 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { AssessmentStore } from '../../store/assessment.store';
 import { ChatComponent } from '../chat/chat.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { SessionSummary } from '../../models/sessionSummary';
+import { SkeletonLoaderComponent } from '../skeleton-loader/skeleton-loader.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ChatComponent, SidebarComponent],
+  imports: [CommonModule, ReactiveFormsModule, ChatComponent, SidebarComponent, SkeletonLoaderComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
@@ -17,6 +18,18 @@ export class HomeComponent {
   protected readonly store = inject(AssessmentStore);
 
   constructor() {
+    this.store.loadSessions();
+
+    effect(() => {
+      const history = this.store.sessionHistory();
+      const isLoading = this.store.isLoading();    
+      
+      // Once sessions are loaded, auto-select the most recent one
+      if (history.length > 0 && !this.store.hasActiveSession()) {
+        this.store.loadSession(history[0].id);
+      }
+    });
+
     this.store.loadSessions();
   }
 

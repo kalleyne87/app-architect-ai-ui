@@ -183,8 +183,8 @@ export const environment = {
 - [x] NgRx Signal Store state management
 - [x] Typed models matching backend contracts
 - [x] Full assessment results view
-- [ ] Session resume from sidebar
-- [ ] Loading and error states
+- [x] Session resume from sidebar
+- [x] Loading and error states
 - [ ] Deploy to Azure Static Web Apps
 
 ---

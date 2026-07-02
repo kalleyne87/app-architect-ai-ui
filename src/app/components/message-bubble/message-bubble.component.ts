@@ -13,6 +13,7 @@ import { AssessmentStore } from "../../store/assessment.store";
 })
 export class MessageBubbleComponent {
   @Input() message!: ChatMessage;
+  @Input() isActive = false;
 
   protected readonly store = inject(AssessmentStore);
   private readonly fb = inject(FormBuilder);
@@ -29,6 +30,10 @@ export class MessageBubbleComponent {
           this.message.questions.map(() => this.fb.control('', Validators.required))
         )
       });
+    }
+
+    if(this.isActive) {
+      this.submitted = false;
     }
   }
 

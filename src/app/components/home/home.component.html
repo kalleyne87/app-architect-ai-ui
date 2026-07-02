@@ -1,74 +1,72 @@
 <div class="home">
-  <app-sidebar
-    (newAssessment)="store.startNewSession()"
-    (sessionSelected)="onSessionSelected($event)">
-  </app-sidebar>
+  @if(store.isLoading() && store.sessionHistory().length === 0) {
+    <app-skeleton-loader></app-skeleton-loader>
+  }
+  @else {
+    <app-sidebar
+      (newAssessment)="store.startNewSession()"
+      (sessionSelected)="onSessionSelected($event)">
+    </app-sidebar>
 
-  <main class="home-chat">
-    <header class="home-header">
-      <span class="home-header-title">System design architect</span>
-    </header>
+    <main class="home-chat">
+      <header class="home-header">
+        <span class="home-header-title">System Design Architect</span>
+      </header>
 
-    @if (!store.hasActiveSession() && !store.isLoading()) {
-      <div class="home-empty-state">
-        <div class="home-empty-icon">⬡</div>
-        <h2 class="home-empty-title">What would you like to build?</h2>
-        <p class="home-empty-sub">
-          Describe your system in plain language and I'll walk you through
-          the best architecture — asking a few questions if needed.
-        </p>
-        <div class="home-suggestions">
-          @for (s of suggestions; track s) {
-            <button class="home-suggestion" (click)="startChat(s)">
-              {{ s }}
-            </button>
-          }
+      @if (store.error()) {
+        <div class="home-error-banner">
+          ⚠ {{ store.error() }}
+          <button class="home-error-dismiss" (click)="store.clearError()">✕</button>
         </div>
-      </div>
-
-      <footer class="home-footer">
-        <div class="home-input-wrap">
-          <textarea
-            class="home-input"
-            [formControl]="inputControl"
-            (keydown)="onHomeKeydown($event)"
-            rows="1"
-            placeholder="Describe the system you'd like to build…">
-          </textarea>
-          <button
-            class="home-send-btn"
-            (click)="startChat(inputControl.value ?? '')"
-            [disabled]="!inputControl.value?.trim()">
-            ➤
-          </button>
-        </div>
-        <p class="home-hint">Enter to send · Shift+Enter for new line</p>
-      </footer>
-    }
-
-    <!-- Pre-chat loading -->
-    @if (store.isLoading() && !store.hasActiveSession()) {
-      <div class="home-pre-chat">
-        <!-- User bubble -->
-        <div class="home-pre-chat-user">
-          <div class="home-pre-chat-avatar">You</div>
-          <div class="home-pre-chat-text">{{ lastInput }}</div>
-        </div>
-
-        <!-- AI typing indicator -->
-        <div class="home-pre-chat-ai">
-          <div class="home-loading-avatar">⬡</div>
-          <div class="home-loading-dots">
-            <span></span><span></span><span></span>
+      }
+      
+      @if (!store.hasActiveSession() && !store.isLoading()) {
+        <div class="home-empty-state">
+          <div class="home-empty-icon">⬡</div>
+          <h2 class="home-empty-title">What would you like to build?</h2>
+          <p class="home-empty-sub">
+            Describe your system in plain language and I'll walk you through
+            the best architecture — asking a few questions if needed.
+          </p>
+          <div class="home-suggestions">
+            @for (s of suggestions; track s) {
+              <button class="home-suggestion" (click)="startChat(s)">
+                {{ s }}
+              </button>
+            }
           </div>
         </div>
-      </div>
-    }
 
-    <!-- Active chat -->
-    @if (store.hasActiveSession()) {
-      @if (store.isLoadingSession()) {
+        <footer class="home-footer">
+          <div class="home-input-wrap">
+            <textarea
+              class="home-input"
+              [formControl]="inputControl"
+              (keydown)="onHomeKeydown($event)"
+              rows="1"
+              placeholder="Describe the system you'd like to build…">
+            </textarea>
+            <button
+              class="home-send-btn"
+              (click)="startChat(inputControl.value ?? '')"
+              [disabled]="!inputControl.value?.trim()">
+              ➤
+            </button>
+          </div>
+          <p class="home-hint">Enter to send · Shift+Enter for new line</p>
+        </footer>
+      }
+
+      <!-- Pre-chat loading -->
+      @if (store.isLoading() && !store.hasActiveSession()) {
         <div class="home-pre-chat">
+          <!-- User bubble -->
+          <div class="home-pre-chat-user">
+            <div class="home-pre-chat-avatar">You</div>
+            <div class="home-pre-chat-text">{{ lastInput }}</div>
+          </div>
+
+          <!-- AI typing indicator -->
           <div class="home-pre-chat-ai">
             <div class="home-loading-avatar">⬡</div>
             <div class="home-loading-dots">
@@ -76,9 +74,24 @@
             </div>
           </div>
         </div>
-      } @else {
-        <app-chat></app-chat>
       }
-    }
-  </main>
+
+      <!-- Active chat -->
+      @if (store.hasActiveSession()) {
+        @if (store.isLoadingSession()) {
+          <div class="home-pre-chat">
+            <div class="home-pre-chat-ai">
+              <div class="home-loading-avatar">⬡</div>
+              <div class="home-loading-dots">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <app-chat></app-chat>
+        }
+      }
+    </main>
+  }
+  
 </div>
