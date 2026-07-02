@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { AssessmentStore } from '../../store/assessment.store';
@@ -17,6 +17,18 @@ export class HomeComponent {
   protected readonly store = inject(AssessmentStore);
 
   constructor() {
+    this.store.loadSessions();
+
+    effect(() => {
+      const history = this.store.sessionHistory();
+      const isLoading = this.store.isLoading();    
+      
+      // Once sessions are loaded, auto-select the most recent one
+      if (history.length > 0 && !this.store.hasActiveSession()) {
+        this.store.loadSession(history[0].id);
+      }
+    });
+
     this.store.loadSessions();
   }
 
