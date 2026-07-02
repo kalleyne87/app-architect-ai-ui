@@ -362,6 +362,9 @@ export const AssessmentStore = signalStore(
           )
         )
       ),
+      clearError(): void {
+        patchState(store, { error: null });
+      },
     };
   })
 );

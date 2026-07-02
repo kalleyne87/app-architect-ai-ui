@@ -5,11 +5,12 @@ import { AssessmentStore } from '../../store/assessment.store';
 import { ChatComponent } from '../chat/chat.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { SessionSummary } from '../../models/sessionSummary';
+import { SkeletonLoaderComponent } from '../skeleton-loader/skeleton-loader.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ChatComponent, SidebarComponent],
+  imports: [CommonModule, ReactiveFormsModule, ChatComponent, SidebarComponent, SkeletonLoaderComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
