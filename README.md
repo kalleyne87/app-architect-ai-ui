@@ -184,7 +184,7 @@ export const environment = {
 - [x] Typed models matching backend contracts
 - [x] Full assessment results view
 - [x] Session resume from sidebar
-- [ ] Loading and error states
+- [x] Loading and error states
 - [ ] Deploy to Azure Static Web Apps
 
 ---
