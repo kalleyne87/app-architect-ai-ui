@@ -1,3 +1,12 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
 .chat {
   display: flex;
   flex-direction: column;
@@ -135,5 +144,5 @@
 
 @keyframes dot {
   0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
-  30%            { opacity: 1;   transform: translateY(-3px); }
+  30% { opacity: 1;   transform: translateY(-3px); }
 }

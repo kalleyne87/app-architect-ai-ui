@@ -29,7 +29,7 @@
       <span class="bubble-badge">? A few questions first</span>
       <p class="bubble-text">{{ message.text }}</p>
 
-      @if (!submitted) {
+      @if (!submitted || isActive) {
         <form [formGroup]="answersForm" (ngSubmit)="submitAnswers()" class="bubble-form">
           <div formArrayName="answers">
             @for (question of message.questions; track question; let i = $index) {

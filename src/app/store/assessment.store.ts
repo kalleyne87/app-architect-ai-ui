@@ -23,6 +23,7 @@ export interface AssessmentState {
   pendingQuestions: string[];
   messages: ChatMessage[];
   sessionHistory: SessionSummary[];
+  activeQuestionMessageId: string | null;
 }
 
 const initialState: AssessmentState = {
@@ -34,6 +35,7 @@ const initialState: AssessmentState = {
   pendingQuestions: [],
   messages: [],
   sessionHistory: [],
+  activeQuestionMessageId: null,
 };
 
 export const AssessmentStore = signalStore(
@@ -46,6 +48,7 @@ export const AssessmentStore = signalStore(
     completedCount: computed(() =>
       store.sessionHistory().filter(s => s.status === SessionStatus.Completed).length
     ),
+    activeQuestionId: computed(() => store.activeQuestionMessageId() ?? null), 
   })),
 
   withMethods((store, assessmentService = inject(AssessmentService)) => {
@@ -84,6 +87,7 @@ export const AssessmentStore = signalStore(
           error:            null,
           pendingQuestions: [],
           messages:         [],
+          activeQuestionMessageId: null,
         });
       },
 
@@ -115,6 +119,8 @@ export const AssessmentStore = signalStore(
                     sessionHistory:   [summary, ...state.sessionHistory],
                   }));
 
+                  const aiMessageId = crypto.randomUUID();
+
                   // Add AI message
                   const aiMessage: ChatMessage = response.isReadyForAssessment
                     ? {
@@ -125,13 +131,18 @@ export const AssessmentStore = signalStore(
                         timestamp:  new Date(),
                       }
                     : {
-                        id:        crypto.randomUUID(),
+                        id:        aiMessageId,
                         role:      MessageRole.Assistant,
                         type:      MessageType.Questions,
                         text:      'Great idea! I need a bit more detail. Please answer these:',
                         questions: response.nextQuestions,
                         timestamp: new Date(),
                       };
+                  
+                  patchState(store, (state) => ({
+                    ...state,
+                    activeQuestionMessageId: response.isReadyForAssessment ? null : aiMessageId,
+                  }));
 
                   addMessage(aiMessage);
                 },
@@ -174,6 +185,8 @@ export const AssessmentStore = signalStore(
                     ),
                   }));
 
+                  const aiMessageId = crypto.randomUUID();
+
                   const aiMessage: ChatMessage = response.isReadyForAssessment
                     ? {
                         id:         crypto.randomUUID(),
@@ -183,13 +196,21 @@ export const AssessmentStore = signalStore(
                         timestamp:  new Date(),
                       }
                     : {
-                        id:        crypto.randomUUID(),
+                        id:        aiMessageId,
                         role:      MessageRole.Assistant,
                         type:      MessageType.Questions,
                         text:      'Thanks! Just a few more questions:',
                         questions: response.nextQuestions,
                         timestamp: new Date(),
                       };
+                  
+                  patchState(store, (state) => ({
+                    ...state,
+                    activeQuestionMessageId: response.isReadyForAssessment ? null : aiMessageId,
+                    sessionStatus:    response.status,
+                    isLoading:        false,
+                    pendingQuestions: response.isReadyForAssessment ? [] : response.nextQuestions,
+                  }));
 
                   addMessage(aiMessage);
                 },
@@ -305,11 +326,28 @@ export const AssessmentStore = signalStore(
                     });
                   }
 
+                  let activeQuestionMessageId: string | null = null;
+
+                  if (session.status === 'NeedsMoreInformation' && session.currentQuestions?.length > 0) {
+                    const resumeMessageId = crypto.randomUUID();
+                    activeQuestionMessageId = resumeMessageId;
+
+                    messages.push({
+                      id:        resumeMessageId,
+                      role:      MessageRole.Assistant,
+                      type:      MessageType.Questions,
+                      text:      'Here is where we left off — please answer these to continue:',
+                      questions: session.currentQuestions,
+                      timestamp: new Date()
+                    });
+                  }
+
                   patchState(store, {
                     activeSessionId: session.id,
-                    sessionStatus: session.status === 'Completed' 
-                                    ? SessionStatus.Completed : session.status,
+                    sessionStatus: session.status,
                     isLoadingSession: false,
+                    activeQuestionMessageId: activeQuestionMessageId,
+                    pendingQuestions: session.currentQuestions ?? [],
                     messages
                   });
                 },

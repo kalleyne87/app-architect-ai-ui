@@ -22,6 +22,7 @@ export class SidebarComponent {
   }
 
   onSelectSession(session: SessionSummary): void {
+    this.store.loadSession(session.id);
     this.sessionSelected.emit(session);
   }
 
