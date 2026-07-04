@@ -1,7 +1,7 @@
 import { computed, inject } from '@angular/core';
 import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap, tap } from 'rxjs';
+import { pipe, switchMap, tap, Subscription } from 'rxjs';
 import { AssessmentService } from '../services/assessment';
 import { ChatMessage, MessageRole, MessageType } from '../models/chatMessage';
 import { SessionStatus, SessionSummary } from '../models/sessionSummary';
@@ -52,6 +52,13 @@ export const AssessmentStore = signalStore(
   })),
 
   withMethods((store, assessmentService = inject(AssessmentService)) => {
+    let pollSubscription: Subscription | null = null;
+
+    function stopPolling(): void {
+      pollSubscription?.unsubscribe();
+      pollSubscription = null;
+    }
+
     function addMessage(message: ChatMessage): void {
       patchState(store, (state) => ({
         messages: [...state.messages, message],
@@ -78,8 +85,64 @@ export const AssessmentStore = signalStore(
       };
     }
 
+    function pollForCompletion(sessionId: string): void {
+      stopPolling();
+
+      pollSubscription = assessmentService.pollSession(sessionId).subscribe({
+        next: (session) => {
+          if (store.activeSessionId() !== sessionId) return;
+
+          if (session.status !== 'Completed' && session.status !== 'Failed') {
+            return;
+          }
+
+          if (session.status === 'Completed' && session.finalAssessment) {
+            addMessage({
+              id: crypto.randomUUID(),
+              role: MessageRole.Assistant,
+              type: MessageType.Assessment,
+              assessment: {
+                executiveSummary: session.finalAssessment.executiveSummary,
+                recommendedServices: session.finalAssessment.recommendedServices,
+                risks: session.finalAssessment.risks,
+                tradeoffs: session.finalAssessment.tradeoffs,
+                roadmap: session.finalAssessment.roadmap,
+              },
+              timestamp: new Date(),
+            });
+          } else {
+            addMessage(makeErrorMessage(
+              'Something went wrong generating your assessment. Please try again.'
+            ));
+          }
+
+          patchState(store, (state) => ({
+            sessionStatus: session.status,
+            isLoading: false,
+            sessionHistory: state.sessionHistory.map(s =>
+              s.id === sessionId
+                ? { ...s, status: session.status === 'Completed' ? SessionStatus.Completed : SessionStatus.Failed }
+                : s
+            ),
+          }));
+
+          pollSubscription = null;
+        },
+        error: (err: Error) => {
+          if (store.activeSessionId() === sessionId) {
+            addMessage(makeErrorMessage(
+              'Lost connection while waiting for your assessment. Please refresh and try again.'
+            ));
+            patchState(store, { isLoading: false, error: err.message ?? 'Unknown error' });
+          }
+          pollSubscription = null;
+        },
+      });
+    }
+
     return {
       startNewSession(): void {
+        stopPolling();
         patchState(store, {
           activeSessionId:  null,
           sessionStatus:    null,
@@ -101,27 +164,30 @@ export const AssessmentStore = signalStore(
             assessmentService.createAssessment(request).pipe(
               tapResponse({
                 next: (response: AssessmentSessionResponse) => {
-                  // Add to sidebar history
                   const summary: SessionSummary = {
                     id: String(response.sessionId),
                     title: request.requirements.slice(0, 50) +
                       (request.requirements.length > 50 ? '…' : ''),
-                    status: response.status === 'Completed' 
-                    ? SessionStatus.Completed : SessionStatus.Active,
+                    status: response.status === 'Completed'
+                      ? SessionStatus.Completed : SessionStatus.Active,
                     createdAt: new Date(),
                   };
 
                   patchState(store, (state) => ({
-                    activeSessionId:  response.sessionId,
-                    sessionStatus:    response.status,
-                    isLoading:        false,
-                    pendingQuestions: response.isReadyForAssessment ? [] : response.nextQuestions,
-                    sessionHistory:   [summary, ...state.sessionHistory],
+                    activeSessionId: response.sessionId,
+                    sessionStatus: response.status,
+                    isLoading: response.status === 'Queued',
+                    pendingQuestions: response.status === 'Queued' ? [] : response.nextQuestions,
+                    sessionHistory: [summary, ...state.sessionHistory],
                   }));
+
+                  if (response.status === 'Queued') {
+                    pollForCompletion(response.sessionId);
+                    return;
+                  }
 
                   const aiMessageId = crypto.randomUUID();
 
-                  // Add AI message
                   const aiMessage: ChatMessage = response.isReadyForAssessment
                     ? {
                         id:         crypto.randomUUID(),
@@ -175,15 +241,20 @@ export const AssessmentStore = signalStore(
               tapResponse({
                 next: (response: AssessmentSessionResponse) => {
                   patchState(store, (state) => ({
-                    sessionStatus:    response.status,
-                    isLoading:        false,
-                    pendingQuestions: response.isReadyForAssessment ? [] : response.nextQuestions,
-                    sessionHistory:   state.sessionHistory.map(s =>
+                    sessionStatus: response.status,
+                    isLoading: response.status === 'Queued',
+                    pendingQuestions: response.status === 'Queued' ? [] : response.nextQuestions,
+                    sessionHistory: state.sessionHistory.map(s =>
                       s.id === String(response.sessionId)
                         ? { ...s, status: response.status === 'Completed' ? SessionStatus.Completed : SessionStatus.Active }
                         : s
                     ),
                   }));
+
+                  if (response.status === 'Queued') {
+                    pollForCompletion(response.sessionId);
+                    return;
+                  }
 
                   const aiMessageId = crypto.randomUUID();
 
@@ -207,9 +278,6 @@ export const AssessmentStore = signalStore(
                   patchState(store, (state) => ({
                     ...state,
                     activeQuestionMessageId: response.isReadyForAssessment ? null : aiMessageId,
-                    sessionStatus:    response.status,
-                    isLoading:        false,
-                    pendingQuestions: response.isReadyForAssessment ? [] : response.nextQuestions,
                   }));
 
                   addMessage(aiMessage);
@@ -257,14 +325,16 @@ export const AssessmentStore = signalStore(
 
       loadSession: rxMethod<string>(
         pipe(
-          tap(() => patchState(store, { isLoadingSession: true, messages: [] })),
+          tap(() => {
+            stopPolling();
+            patchState(store, { isLoadingSession: true, messages: [] });
+          }),
           switchMap((id) =>
             assessmentService.getSession(id).pipe(
               tapResponse({
                 next: (session) => {
                   const messages: ChatMessage[] = [];
 
-                  // Add original request as user message
                   messages.push({
                     id: crypto.randomUUID(),
                     role: MessageRole.User,
@@ -273,16 +343,13 @@ export const AssessmentStore = signalStore(
                     timestamp: new Date(session.createdDateTime)
                   });
 
-                  // Rebuild Q&A rounds from collected answers
                   if (session.collectedQuestionsAndAnswers.length > 0) {
-                    // Group into rounds of questions (3 per round max)
                     const roundSize = 3;
                     const qna = session.collectedQuestionsAndAnswers;
 
                     for (let i = 0; i < qna.length; i += roundSize) {
                       const round = qna.slice(i, i + roundSize);
 
-                      // AI question bubble
                       messages.push({
                         id: crypto.randomUUID(),
                         role: MessageRole.Assistant,
@@ -294,7 +361,6 @@ export const AssessmentStore = signalStore(
                         timestamp: new Date(round[0].createdDateTime)
                       });
 
-                      // User answer bubble
                       const answerSummary = round
                         .map((qa: any) => `${qa.question}\n${qa.answer}`)
                         .join('\n\n');
@@ -309,7 +375,6 @@ export const AssessmentStore = signalStore(
                     }
                   }
 
-                  // Add final assessment if completed
                   if (session.finalAssessment) {
                     messages.push({
                       id: crypto.randomUUID(),
@@ -350,6 +415,11 @@ export const AssessmentStore = signalStore(
                     pendingQuestions: session.currentQuestions ?? [],
                     messages
                   });
+
+                  if (session.status === 'ReadyForAssessment') {
+                    patchState(store, { isLoading: true });
+                    pollForCompletion(session.id);
+                  }
                 },
                 error: (err: Error) => {
                   patchState(store, {
