@@ -7,10 +7,11 @@ import { AssessmentRequest } from '../models/assessmentRequest';
 import { SubmitAnswersRequest } from '../models/submitAnswersRequest';
 import { SessionSummaryResponse } from '../models/sessionSummaryResponse';
 import { AssessmentSession } from '../models/assessmentSession';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AssessmentService {
-  private readonly baseUrl = '/api/assessments';
+  private readonly baseUrl = `${environment.apiUrl}/api/assessments`;
 
   private readonly apiKey = 'architect-ai-2026-kb';
   private readonly pollIntervalMs = 3000;

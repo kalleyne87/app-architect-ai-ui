@@ -2,7 +2,7 @@
   0%   { background-position: -400px 0; }
   100% { background-position: 400px 0; }
 }
-
+ 
 .skeleton-block {
   background: linear-gradient(
     90deg,
@@ -14,14 +14,14 @@
   animation: shimmer 1.6s ease-in-out infinite;
   border-radius: 6px;
 }
-
+ 
 .skeleton {
   display: flex;
   height: 100vh;
   width: 100vw;
   background: #111113;
   overflow: hidden;
-
+ 
   // ── Sidebar ────────────────────────────────────────────────
   &-sidebar {
     width: 220px;
@@ -33,7 +33,7 @@
     flex-direction: column;
     gap: 10px;
   }
-
+ 
   &-brand {
     display: flex;
     align-items: center;
@@ -42,27 +42,27 @@
     border-bottom: 1px solid rgba(255,255,255,0.06);
     margin-bottom: 4px;
   }
-
+ 
   &-brand-icon {
     width: 30px;
     height: 30px;
     border-radius: 8px;
     flex-shrink: 0;
   }
-
+ 
   &-brand-text {
     height: 14px;
     width: 90px;
     border-radius: 4px;
   }
-
+ 
   &-btn {
     height: 34px;
     width: 100%;
     border-radius: 8px;
     margin-bottom: 4px;
   }
-
+ 
   &-label {
     height: 10px;
     width: 40px;
@@ -70,15 +70,15 @@
     background: rgba(255,255,255,0.04);
     margin: 4px 10px 2px;
   }
-
+ 
   &-session {
     height: 32px;
     width: 100%;
     border-radius: 8px;
-
+ 
     &-short { width: 75%; }
   }
-
+ 
   // ── Main area ─────────────────────────────────────────────
   &-main {
     flex: 1;
@@ -86,19 +86,19 @@
     flex-direction: column;
     overflow: hidden;
   }
-
+ 
   &-header {
     padding: 14px 20px;
     border-bottom: 1px solid rgba(255,255,255,0.06);
     flex-shrink: 0;
   }
-
+ 
   &-header-text {
     height: 14px;
     width: 180px;
     border-radius: 4px;
   }
-
+ 
   &-chat {
     flex: 1;
     padding: 24px 20px;
@@ -107,41 +107,62 @@
     gap: 20px;
     overflow: hidden;
   }
-
+ 
   &-message {
     display: flex;
     gap: 12px;
     align-items: flex-start;
-
+ 
     &-user {
       flex-direction: row-reverse;
     }
   }
-
+ 
   &-avatar {
     width: 30px;
     height: 30px;
     border-radius: 8px;
     flex-shrink: 0;
   }
-
+ 
   &-lines {
     display: flex;
     flex-direction: column;
     gap: 8px;
     max-width: 60%;
-
+ 
     &-right {
       align-items: flex-end;
     }
   }
-
+ 
   &-line {
     height: 14px;
     border-radius: 4px;
-
+ 
     &-long   { width: 320px; }
     &-medium { width: 220px; }
     &-short  { width: 140px; }
+  }
+}
+
+// ── Mobile ────────────────────────────────────────────────── 
+@media (max-width: 768px) {
+  .skeleton {
+    height: 100dvh;
+  }
+ 
+  .skeleton-sidebar {
+    display: none;
+  }
+ 
+  .skeleton-header,
+  .skeleton-chat {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+ 
+  .skeleton-lines {
+    max-width: 80%;
   }
 }

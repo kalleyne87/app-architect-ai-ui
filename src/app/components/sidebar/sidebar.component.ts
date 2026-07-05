@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Output, EventEmitter, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AssessmentStore } from '../../store/assessment.store';
 import { SessionStatus, SessionSummary } from '../../models/sessionSummary';
@@ -15,6 +15,9 @@ export class SidebarComponent {
   @Output() sessionSelected = new EventEmitter<SessionSummary>();
 
   protected readonly store = inject(AssessmentStore);
+
+  isOpen = input(false);
+  close = output<void>();
 
   onNewAssessment(): void {
     this.store.startNewSession();
