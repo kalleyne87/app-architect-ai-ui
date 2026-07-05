@@ -12,6 +12,7 @@ export interface AssessmentSessionResponse {
 export enum AssessmentSessionStatus {
     NeedsMoreInformation = 'NeedsMoreInformation',
     ReadyForAssessment = 'ReadyForAssessment',
+    Queued = 'Queued',
     Completed = 'Completed',
     Failed = 'Failed'
 }

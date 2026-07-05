@@ -4,12 +4,15 @@
   }
   @else {
     <app-sidebar
+      [isOpen]="isSidebarOpen()"
+      (close)="isSidebarOpen.set(false)"
       (newAssessment)="store.startNewSession()"
       (sessionSelected)="onSessionSelected($event)">
     </app-sidebar>
 
     <main class="home-chat">
       <header class="home-header">
+        <button class="home-menu-btn" (click)="isSidebarOpen.set(true)">☰</button>
         <span class="home-header-title">System Design Architect</span>
       </header>
 

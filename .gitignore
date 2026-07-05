@@ -1,3 +1,9 @@
 node_modules
 .angular/cache
 *.DS_Store
+dist/assessment-ui/3rdpartylicenses.txt
+dist/assessment-ui/prerendered-routes.json
+dist/assessment-ui/browser/main-FLCWPSOE.js
+dist/assessment-ui/browser/styles-J5OPAWUU.css
+dist/assessment-ui/browser/main-3AQJZ64P.js
+src/environments/environment.prod.ts

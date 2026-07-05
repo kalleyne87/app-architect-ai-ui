@@ -6,7 +6,7 @@
   height: 100%;
   overflow: hidden;
 }
-
+ 
 .chat {
   display: flex;
   flex-direction: column;
@@ -14,7 +14,7 @@
   min-height: 0;
   height: 100%;
   overflow: hidden;
-
+ 
   &-messages {
     flex: 1;
     min-height: 0;
@@ -24,12 +24,12 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-
+ 
     & > * {
       max-width: 100%;
       min-width: 0;
     }
-
+ 
     &::-webkit-scrollbar { width: 4px; }
     &::-webkit-scrollbar-track { background: transparent; }
     &::-webkit-scrollbar-thumb {
@@ -37,14 +37,14 @@
       border-radius: 2px;
     }
   }
-
+ 
   &-bubble {
     display: flex;
     align-items: flex-start;
     gap: 10px;
     min-width: 0;
   }
-
+ 
   &-avatar {
     width: 30px;
     height: 30px;
@@ -58,7 +58,7 @@
     font-size: 14px;
     flex-shrink: 0;
   }
-
+ 
   &-typing {
     display: flex;
     align-items: center;
@@ -67,25 +67,25 @@
     padding: 12px 16px;
     border-radius: 12px;
     border-bottom-left-radius: 3px;
-
+ 
     span {
       width: 6px;
       height: 6px;
       border-radius: 50%;
       background: rgba(255,255,255,0.3);
       animation: dot 1.2s ease-in-out infinite;
-
+ 
       &:nth-child(2) { animation-delay: 0.2s; }
       &:nth-child(3) { animation-delay: 0.4s; }
     }
   }
-
+ 
   &-footer {
     flex-shrink: 0;
     padding: 14px 20px 16px;
     border-top: 1px solid rgba(255,255,255,0.06);
   }
-
+ 
   &-input-wrap {
     display: flex;
     align-items: flex-end;
@@ -95,12 +95,12 @@
     border-radius: 12px;
     padding: 10px 10px 10px 14px;
     transition: border-color 0.15s;
-
+ 
     &:focus-within {
       border-color: rgba(99,102,241,0.45);
     }
   }
-
+ 
   &-input {
     flex: 1;
     background: transparent;
@@ -111,10 +111,10 @@
     line-height: 1.55;
     resize: none;
     font-family: inherit;
-
+ 
     &::placeholder { color: rgba(255,255,255,0.25); }
   }
-
+ 
   &-send-btn {
     width: 34px;
     height: 34px;
@@ -129,11 +129,11 @@
     justify-content: center;
     transition: background 0.15s;
     flex-shrink: 0;
-
+ 
     &:hover:not(:disabled) { background: #5457e0; }
     &:disabled { opacity: 0.35; cursor: not-allowed; }
   }
-
+ 
   &-hint {
     font-size: 11px;
     color: rgba(255,255,255,0.2);
@@ -141,8 +141,35 @@
     margin: 8px 0 0;
   }
 }
-
+ 
 @keyframes dot {
   0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
   30% { opacity: 1;   transform: translateY(-3px); }
+}
+
+// ── Mobile ──────────────────────────────────────────────────
+ 
+@media (max-width: 768px) {
+  :host,
+  .chat {
+    height: 100dvh;
+  }
+ 
+  .chat-messages {
+    padding: 16px 14px 10px;
+    gap: 10px;
+  }
+ 
+  .chat-footer {
+    padding: 10px 14px calc(12px + env(safe-area-inset-bottom));
+  }
+ 
+  .chat-input {
+    font-size: 16px;
+  }
+ 
+  .chat-send-btn {
+    width: 40px;
+    height: 40px;
+  }
 }
