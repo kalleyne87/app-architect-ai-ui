@@ -1,4 +1,4 @@
-<aside class="sidebar">
+<aside class="sidebar" [class.sidebar--open]="isOpen()">
   <div class="sidebar-brand">
     <img src="chatbot.png" width="30" height="30" alt="Chatbot Icon">
     <span class="sidebar-brand-name">Architect AI</span>
@@ -39,3 +39,4 @@
     }
   </nav>
 </aside>
+<div class="sidebar-backdrop" [class.sidebar-backdrop--visible]="isOpen()" (click)="close.emit()"></div>

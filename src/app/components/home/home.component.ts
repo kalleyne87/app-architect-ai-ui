@@ -1,4 +1,4 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { AssessmentStore } from '../../store/assessment.store';
@@ -17,6 +17,7 @@ import { SkeletonLoaderComponent } from '../skeleton-loader/skeleton-loader.comp
 export class HomeComponent {
   protected readonly store = inject(AssessmentStore);
   private hasAutoSelected = false;
+  isSidebarOpen = signal(false);
 
   constructor() {
     this.store.loadSessions();
